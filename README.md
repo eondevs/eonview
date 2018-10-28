@@ -6,7 +6,7 @@ EonView was an app that was used to manage EonBot and create configuration files
 EonView was written in HTML/TypeScript/Sass using Electron and Angular4 frameworks and it's a Node.js application.
 
 As of 2018-10-27
-These are the things that are left undone -
+These are the things that are left undone
 
 ## Main online screen
     Remote Control status connection to the WebSockets.
