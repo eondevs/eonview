@@ -1,0 +1,61 @@
+@import "../colors.scss";
+
+
+.menuBarButtons {
+  color: white;
+  font: 14px/100% arial, sans-serif;
+  right: 5px;
+  text-decoration: none;
+  padding-top: 3px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+#closeButton a:after {
+  content: '✖';
+}
+#minimizeButton a:after {
+  content: '🗕';
+}
+#maximizeButton a:after {
+  content: '🗖';
+}
+
+#menuBar {
+  -webkit-app-region:drag;     
+  background-color: $secondary-color;
+  position: absolute;
+  height: 20px;
+  width: 100%;
+  z-index: 4;
+}
+
+#menuBar ul #closeButton:hover {
+  background-color: red;
+}
+
+#menuBar ul #minimizeButton:hover {
+  background-color: #25323c;
+}
+
+#menuBar ul #maximizeButton:hover {
+  background-color: #25323c;
+}
+
+#menuBar ul{
+  list-style-type: none;  
+  margin: 0;
+  height: 20px;
+}
+
+#menuBar ul li {
+  -webkit-app-region:no-drag !important;     
+  padding-top: 1px;
+  float: right;
+  height: 100%;
+}
+
+#menuBar ul li a{
+  display: block;
+  text-align: center;
+}

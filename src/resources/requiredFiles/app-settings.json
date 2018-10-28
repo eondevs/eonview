@@ -1,0 +1,9 @@
+{
+  "remoteControl": {
+    "rememberCred": true,
+    "address": "localhost",
+    "port": 8080,
+    "username": "123",
+    "password": "123"
+  }
+}

@@ -1,0 +1,265 @@
+@import "../colors.scss";
+
+*:focus {
+  outline: none;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+button[disabled], input[disabled] {
+  cursor: default !important;
+  opacity: 0.5;
+}
+
+.saveButton {
+  float: right !important;
+  font-weight: bold;
+}
+.input {
+  position: relative;
+  margin-top: 15px;
+  padding: 0 15px;
+}
+
+.inputField {
+  cursor: text;
+  border: 0;
+  background-color: transparent;
+  display: block;
+  border-bottom: 2px solid $primary-color;
+  color:  $main-text;
+  padding: 8px 0 2px 4px;
+  font-size: 13px;
+  transition: opacity 0.4s;
+  width: 100%;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  &:hover{
+    border-bottom: 2px solid $golden-color;
+    + .inputFieldText {
+      top: -8px !important;
+      color: $golden-color;
+    }
+  }
+  &:focus {
+    border-bottom: 2px solid $blue-color;
+    + .inputFieldText {
+      top: -8px !important;
+      color: $blue-color;
+    }
+  }
+}
+
+.selectInput {
+  text-transform: uppercase; 
+  padding: 10px 0 5px 0;
+  option {
+    border: 0; 
+    outline: 0;
+    background-color: $secondary-color;
+  }
+}
+
+.inputFieldText{
+  transition: all 0.2s;
+  font-size: 13px;
+  color: $golden-color;
+  position: absolute;
+  top: 8px;
+  &.notEmpty {
+    top: -8px !important;
+  }
+}
+
+.labelField {
+  display:inline-block;
+  padding: 7px 0;
+  font-size: 14px;
+  color: $main-text;
+}
+
+.sliderField  {
+  cursor: pointer;
+  width: 60px;
+  height: 20px;
+  background: #272C33;
+  float:right;
+  position: relative;
+  &:after {
+    content: 'OFF';
+    color: $red-color;
+    position: absolute;
+    right: 6px;
+    padding-top: 3px;
+    z-index: 0;
+    font-size: 11px;
+    font-weight: bold;
+  }
+  &:before {
+    content: 'ON';
+    color: $green-color;
+    padding-top: 3px;
+    position: absolute;
+    left: 8px;
+    z-index: 0;
+    font-size: 11px;
+    font-weight: bold;
+  }
+  label {
+    display: block;
+    width: 30px;
+    height: 20px;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background: darken($secondary-color, 15%);
+    transition: all 0.5s ease;
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
+  }
+  input[type=checkbox] {
+    visibility: hidden;
+    &:checked + label {
+      left: 29px;
+    }
+  }
+}
+
+.range-slider {
+  position: relative;
+  top: 18px;
+}
+
+.range-slider input {
+  cursor: pointer;
+  display: inline-block;
+  -webkit-appearance: none;
+  width: calc(100% - 68px);
+  height: 2px;
+  border-radius: 7px;
+  background: $primary-color;
+}
+
+.range-slider input::-webkit-slider-thumb {
+  height: 13px;
+  width: 13px;
+  border-radius: 50px;
+  opacity: 1;
+  background: $blue-color;
+  cursor: pointer;
+  -webkit-appearance: none;
+  transition: all .15s ease-in-out;
+}
+
+.range-slider-value {
+  display: inline-block;
+  position: relative;
+  width: 52px;
+  color:  $main-text;
+  line-height: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 3px;
+  background: $blue-color;
+  padding: 5px 5px;
+  margin-left: 8px;
+  top: 2.5px;
+  &:after {
+    position: absolute;
+    top: 1px;
+    left: -7px;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-right: 7px solid $blue-color;
+    border-bottom: 7px solid transparent;
+    content: '';
+  }
+}
+
+.inputButton {
+  cursor: pointer;
+  border: 0;
+  outline: 0;
+  margin: 3px 10px 0 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: $main-text;
+  float:right;
+  transition: all 0.2s;
+  font-weight: bold;
+  span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.2s;
+  }
+  &.defaultButton {
+    background-color: $secondary-color;
+    &:hover{
+      background-color: darken($secondary-color , 40%);
+    }
+  }
+  &.orangeButton{
+    background-color: $orange-color;
+    &:hover{
+      background-color: darken($orange-color , 10%);
+    }
+  }
+  &.redButton{ 
+    background-color: $red-color;
+    &:hover{
+      background-color: darken($red-color , 30%);
+    }
+  }
+  &.blueButton{
+    background-color: $blue-color;
+    &:hover{
+      background-color: darken($blue-color , 10%);
+    }
+  }
+}
+
+.checkboxField {
+  position: absolute;
+  top: -2px;
+  left: 155px;
+}
+.checkboxFieldText {
+  display: inline-block;
+  color: $main-text;
+}
+
+.iconDiv {
+  font: normal normal normal 14px/1 'IconsFont';
+  font-size: 18px;
+  text-align: center;
+  float: right;
+  color:white;
+  transition: all .3s;
+}
+
+.iconDiv::before{
+  cursor: pointer;
+}
+
+#removeButton:hover{
+  transform: scale(1.2);
+  color: $red-color;
+}
+
+#addButton:hover {
+  transform: scale(1.2);
+  color: $green-color;
+}
+
+#removeButton::before{
+  content: '\f2ed';
+}
+
+#addButton::before{
+  content: '\f067';
+}

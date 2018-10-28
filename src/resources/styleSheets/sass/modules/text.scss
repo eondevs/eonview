@@ -1,0 +1,80 @@
+@import "../colors.scss";
+
+.header {
+  text-align: center;
+  color:white;
+  font-size: 14px;
+  em {
+    color: $golden-color;
+    font-style:normal;
+  }
+  &.red {
+    color: $red-color;
+  }
+}
+
+.changelogItem {
+  transition: all .3s;
+  padding: 5px 10px;
+  color:white;
+  font-size: 13px;
+  text-align: left;
+}
+
+.changelogItem:hover {
+  background-color: $secondary-color;
+  font-size: 14px;
+}
+
+.textHeader {
+  transition: all .3s;
+  background-color: $blue-color;
+  text-align: center;
+  padding: 1px 5px;
+  margin: 2px 0;
+  color:white;
+  font-size: 16px;
+  em {
+    color: $golden-color;
+    font-style:normal;
+  }
+  &:hover {
+    background-color: darken($blue-color, 10%)
+  }
+}
+
+.textItem {
+  padding: 0 10px;
+  color:white;
+  font-size: 14px;
+  text-align: justify;
+  em {
+    color: $golden-color;
+    font-style:normal;
+  }
+}
+
+.underlinedText {
+  text-align: center; 
+  color: white; 
+  font-size: 12px; 
+  margin-top: 10px;
+  em {
+    transition: all .3s;
+    font-style:normal; 
+    text-decoration: underline;
+  }
+  em:hover {
+    cursor: pointer;
+    color: $red-color;
+    font-size: 13px;
+  }
+}
+
+.errorText {
+  text-align: center;
+  color: $main-text;
+  font-size: 13px;
+  padding: 5px;
+  background-color: $red-color;
+}

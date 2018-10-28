@@ -1,0 +1,16 @@
+@import "../colors.scss";
+
+  .currenciesChartButton {
+    color:white;
+    width: 32px;
+    border: 0;
+    padding: 2px 0 !important;
+    outline: none;
+    margin: 6px 0 0 6px;
+    font-size: 15px;
+    text-align: center;
+    cursor: pointer;
+    background:$accent-color;
+    transition: all 0.5s;
+    display: inline-block;
+  }

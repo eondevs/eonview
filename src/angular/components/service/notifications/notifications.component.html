@@ -1,0 +1,7 @@
+<div id="notificationWrapper">
+  <aside class="notification" [ngClass]="message.style" *ngFor="let message of messages">
+    <div>
+      {{message.content}}
+    </div>
+  </aside>
+</div>

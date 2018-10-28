@@ -1,0 +1,111 @@
+@import "../colors.scss";
+
+
+#sidebar {
+  position: fixed;
+  z-index: 3;
+  background-color: $secondary-color;
+  box-shadow: 0px 2px 10px 0px rgba(0,0,0,0.2);
+  min-height: 100%;
+  width: 40px;
+}
+#sidebar > ul {
+  padding: 0;
+  text-decoration: none;
+  list-style-type: none; 
+}
+
+#sidebar > ul li a, #remoteTab div a{
+  padding: 20px;
+  font-size: 14px;
+  text-align: justify;
+  display: block;
+  cursor: pointer;
+  position: relative;
+  transition: all;
+  transition-duration: .3s;
+  text-decoration: none;
+  background-color: transparent;
+  color:  $main-text;
+  outline: 0;
+}
+
+#remoteTab div a{
+  display: inline-block;
+}
+
+#sidebar > ul li:hover a{
+  cursor: pointer;
+  border-left: 3px solid $green-color;
+  transition: 0.4s;
+}
+
+#sidebar > ul .selected {
+  cursor: pointer;
+  background-color: $accent-color !important;
+  transition: 0.4s;
+  border-left: 3px solid $blue-color;
+}
+
+#sidebar > ul li a div, #remoteTab div a div {
+  z-index: 5;
+  display: inline-block;
+  font: normal normal normal 14px/1 'IconsFont';
+  text-rendering: auto;
+  position: absolute;
+  left: 6px;
+  font-size: 23px;
+  top: 5px;
+  width: 25px;
+  text-align: center;
+  cursor: pointer;
+  padding: 3px 0;
+}
+
+#sidebar > ul li a div::before  , #remoteTabIcons a div::before{
+  cursor: pointer;
+}
+
+#sidebar > ul li:last-child{
+  bottom: 0;
+}
+
+#rcLabel {
+  font-size: 16px;
+}
+
+#rcConnectionStatus::before {
+  content: '\f3ea'
+}
+
+#startBotID::before{
+  content: '\f144' 
+}
+
+#restartBotID::before{
+  content: '\f2ea' 
+}
+
+#stopBotID::before{
+  content: '\f28d'
+}
+
+#configurationID::before {
+  content: '\f085'
+}
+#settingsID::before {
+  content: '\f044' 
+}
+#statsID::before {
+  content: '\f1fe' 
+}
+
+#strategiesEditorID::before {
+  content: '\f0ad'; 
+}
+#rcID::before {
+  content: '\f09e'
+}
+#logOffID::before {
+  content: '\f2f5'
+}

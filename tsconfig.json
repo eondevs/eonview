@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "typeRoots": [
+      "node_modules"
+    ],
+    "types": [
+      "systemjs",
+      "node"
+    ],
+    "moduleResolution": "node",
+    "sourceMap": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "es2017",
+      "dom"
+    ],
+    "removeComments": true,
+    "noImplicitAny": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "outDir": "./src/angularjs/"
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

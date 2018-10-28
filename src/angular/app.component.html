@@ -1,0 +1,20 @@
+<div id="menuBar">
+  <ul>
+    <li id="closeButton">
+      <a (click)="takeAppAction('exit')" class="menuBarButtons">
+      </a>
+    </li>
+    <li id="minimizeButton">
+      <a (click)="takeAppAction('minimize')" class="menuBarButtons">
+      </a>
+    </li>
+    <li id="maximizeButton">
+      <a (click)="takeAppAction('maximize')" class="menuBarButtons">
+      </a>
+    </li>
+  </ul>
+</div>
+<div class="wrapper overflowSlideBar">
+  <router-outlet></router-outlet>
+</div>
+<notifications></notifications>

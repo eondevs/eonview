@@ -1,0 +1,1042 @@
+<div *ngIf="isLoading" class="loadingScreen">
+  <span></span>
+</div>
+<div *ngIf="!isLoading && strategy == null">
+  <div class="col-md-4 col-md-offset-4">
+    <div class="column" style="padding-bottom: 10px; margin-bottom: 0;">
+      <div class="row columnHeader">
+        <div class="col-md-4">
+          <div>ERROR</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="row header" style="padding: 5px; margin: 4px 8px 0 8px;">No strategies were found, please start by creating or importing a strategy config.</div>
+        <button class="inputButton orangeButton" style="width: 50%; margin: 4px 25% 4px 0; background-color: #1a1d22;" (click)="createDefaultStrategy()">
+          <span>CREATE STRATEGY</span>
+        </button>
+        <button class="inputButton orangeButton" style="width: 50%; margin: 4px 25% 4px 0; background-color: #1a1d22;" data-toggle="modal" data-target="#importFile">
+          <span>IMPORT STRATEGY</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="!isLoading && strategy != null">
+  <div class="row">
+    <div class="column" style="padding-bottom: 10px; margin-bottom: 0;">
+      <div class="row columnHeader">
+        <div class="col-md-3">
+          <div>STRATEGIES EDITOR</div>
+        </div>
+        <div class="col-md-4 col-md-offset-5">
+          <button class="inputButton orangeButton" data-toggle="modal" data-target="#exportFile">
+            <span>EXPORT</span>
+          </button>
+          <button class="inputButton orangeButton" data-toggle="modal" data-target="#importFile">
+            <span>IMPORT</span>
+          </button>
+          <button class="inputButton orangeButton" (click)="createDefaultStrategy()">
+            <span>NEW STRATEGY</span>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="input">
+            <input class="inputField" [(ngModel)]="strategy.name" type="text">
+            <div class="inputFieldText" [class.notEmpty]="strategy.name != '' && strategy.name != null">STRATEGY NAME</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8" style="padding-left: 0;">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="column" style="height: 310px; margin-bottom: 0;">
+          <div class="row columnHeader">
+            <div class="col-md-5">
+              <div>TOOLS</div>
+            </div>
+          </div>
+          <div class="row overflowSlideBar" id="toolsList" style="height: 282px;">
+            <div class="row listBox" *ngFor="let tool of strategy.tools; let i = index" (click)="selectTool(tool)" [class.selected]="tool == selectedTool">
+              <div class="col-md-6">{{tool.name}}</div>
+              <div class="col-md-6" style="padding: 0;text-align: right; color: #ccac00;">
+                <div style="display: inline-block;">{{tool.usedTool.name}}</div>
+                <a class="deleteRow" (click)="deleteTool(i)" style="float:right; padding: 0 10px;">Delete</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="column" style="height: 310px; margin: 8px 0 0 0;">
+          <div class="row columnHeader">
+            <div class="col-md-10">
+              <div>SELECTED TOOL SETTINGS</div>
+            </div>
+          </div>
+          <div *ngIf="strategy.tools.length != 0">
+            <div class="row ">
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.name" type="text" maxlength="27">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.name !='' && selectedTool.name != null">TOOL NAME</div>
+                </div>
+              </div>
+            </div>
+            <!-- Buy Price -->
+            <div *ngIf="selectedTool.usedTool.type == 'buyprice'">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="input">
+                    <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.obj">
+                      <option *ngFor="let types of tickerPriceTypes" [value]="types">{{types}}</option>
+                    </select>
+                    <div class="inputFieldText notEmpty">DATA TYPE</div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="input">
+                    <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.calcType" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                      <option *ngFor="let calcType of nonFixedCalcTypes" [value]="calcType">{{calcType}}</option>
+                    </select>
+                    <div class="inputFieldText notEmpty">CALC TYPE</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div *ngIf="selectedTool.usedTool.properties.calcType !='percent'">
+                    <div class="input">
+                      <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.shiftVal" type="number">
+                      <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.shiftVal != '' && selectedTool.usedTool.properties.shiftVal != null">CHANGE VALUE</div>
+                    </div>
+                  </div>
+                  <div *ngIf="selectedTool.usedTool.properties.calcType == 'percent'">
+                    <div class="input">
+                      <div class="range-slider">
+                        <input type="range" [(ngModel)]="selectedTool.usedTool.properties.shiftVal" min="0" max="100" step="0.05">
+                        <span class="range-slider-value">{{selectedTool.usedTool.properties.shiftVal}}%</span>
+                      </div>
+                      <div class="inputFieldText notEmpty">CHANGE VALUE</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row ">
+                <div class="col-md-6 ">
+                  <div class="input">
+                    <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.cond" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                      <option *ngFor="let toolCond of toolConditions" [value]="toolCond.value">{{toolCond.name}}</option>
+                    </select>
+                    <div class="inputFieldText notEmpty">ACTIVATION CONDITION</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Simple Change -->
+            <div *ngIf="selectedTool.usedTool.type == 'simplechange'">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="input">
+                    <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.obj">
+                      <option *ngFor="let types of candlestickPriceTypes" [value]="types">{{types}}</option>
+                      <option *ngFor="let types of tickerPriceTypes" [value]="types">{{types}}</option>
+                      <option *ngFor="let types of movingAverageTypes" [value]="types.value">{{types.name}}</option>
+                      <option *ngFor="let types of otherTypes" [value]="types.value">{{types.name}}</option>
+                    </select>
+                    <div class="inputFieldText notEmpty">DATA TYPE</div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="selectedTool.usedTool.properties.obj == 'sma' || selectedTool.usedTool.properties.obj == 'ema' || selectedTool.usedTool.properties.obj == 'wma'" class="row">
+                <div class="col-md-6">
+                  <div class="input">
+                    <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.objConf.period" type="number">
+                    <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.objConf.period != '' && selectedTool.usedTool.properties.objConf.period != null">CANDLE SIZE</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="col-md-6">
+                    <div class="input">
+                      <select class="inputField" [(ngModel)]="selectedTool.usedTool.properties.objConf.price" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                        <option class="selectOptionField" *ngFor="let priceType of candlestickPriceTypes" [value]="priceType">{{priceType}}</option>
+                      </select>
+                      <div class="inputFieldText notEmpty">CANDLE ATTRIBUTE</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="input">
+                    <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.calcType" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                      <option *ngFor="let calcType of allCalcTypes" [value]="calcType">{{calcType}}</option>
+                    </select>
+                    <div class="inputFieldText notEmpty">CALC TYPE</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div *ngIf="selectedTool.usedTool.properties.calcType !='percent'">
+                    <div class="input">
+                      <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.shiftVal" type="number">
+                      <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.shiftVal != '' && selectedTool.usedTool.properties.shiftVal != null">CHANGE VALUE</div>
+                    </div>
+                  </div>
+                  <div *ngIf="selectedTool.usedTool.properties.calcType == 'percent'">
+                    <div class="input">
+                      <div class="range-slider">
+                        <input type="range" [(ngModel)]="selectedTool.usedTool.properties.shiftVal" min="0" max="100" step="0.05">
+                        <span class="range-slider-value">{{selectedTool.usedTool.properties.shiftVal}}%</span>
+                      </div>
+                      <div class="inputFieldText notEmpty">CHANGE VALUE</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row ">
+                <div class="col-md-6 ">
+                  <div class="input">
+                    <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.cond" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                      <option *ngFor="let toolCond of toolConditions" [value]="toolCond.value">{{toolCond.name}}</option>
+                    </select>
+                    <div class="inputFieldText notEmpty">ACTIVATION CONDITION</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Roller Coaster-->
+            <div *ngIf="selectedTool.usedTool.type == 'rollercoaster'">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="input">
+                    <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.obj" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                      <option *ngFor="let types of candlestickPriceTypes" [value]="types">{{types}}</option>
+                      <option *ngFor="let types of tickerPriceTypes" [value]="types">{{types}}</option>
+                      <option *ngFor="let types of movingAverageTypes" [value]="types.value">{{types.name}}</option>
+                      <option *ngFor="let types of otherTypes" [value]="types.value">{{types.name}}</option>
+                    </select>
+                    <div class="inputFieldText notEmpty">DATA TYPE</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="input">
+                    <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.pointType" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                      <option *ngFor="let pointType of rollercoasterPointTypes" [value]="pointType">{{pointType}}</option>
+                    </select>
+                    <div class="inputFieldText notEmpty">ROLLERCOASTER TYPE</div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="selectedTool.usedTool.properties.obj == 'sma' || selectedTool.usedTool.properties.obj == 'ema' ||selectedTool.usedTool.properties.obj == 'wma'" class="row">
+                <div class="col-md-6">
+                  <div class="input">
+                    <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.objConf.period" type="number">
+                    <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.objConf.period != '' && selectedTool.usedTool.properties.objConf.period != null">CANDLE SIZE</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="input ">
+                    <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.objConf.price" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                      <option *ngFor="let priceType of candlestickPriceTypes" [value]="priceType">{{priceType}}</option>
+                    </select>
+                    <div class="inputFieldText notEmpty">CANDLE ATTRIBUTE</div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="input ">
+                    <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.calcType" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                      <option *ngFor="let calcType of nonFixedCalcTypes" [value]="calcType">{{calcType}}</option>
+                    </select>
+                    <div class="inputFieldText notEmpty">CALC TYPE</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div *ngIf="selectedTool.usedTool.properties.calcType != 'percent'">
+                    <div class="input">
+                      <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.shiftVal" type="number">
+                      <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.shiftVal != '' && selectedTool.usedTool.properties.shiftVal != null">CHANGE VALUE</div>
+                    </div>
+                  </div>
+                  <div *ngIf="selectedTool.usedTool.properties.calcType == 'percent'">
+                    <div class="input">
+                      <div class="range-slider">
+                        <input type="range" [(ngModel)]="selectedTool.usedTool.properties.shiftVal" min="0" max="100" step="0.05">
+                        <span class="range-slider-value">{{selectedTool.usedTool.properties.shiftVal}}%</span>
+                      </div>
+                      <div class="inputFieldText notEmpty">CHANGE VALUE</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- RSI -->
+          <div *ngIf="selectedTool.usedTool.type == 'rsi'">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.period" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.period != '' && selectedTool.usedTool.properties.period != null">CANDLE SIZE</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.price" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let priceType of candlestickPriceTypes" [value]="priceType">{{priceType}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">CANDLE ATTRIBUTE</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.cond" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let toolCond of toolConditions" [value]="toolCond.value">{{toolCond.name}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">ACTIVATION CONDITION</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <div class="range-slider">
+                    <input type="range" [(ngModel)]="selectedTool.usedTool.properties.levelVal" min="0" max="100" step="0.05">
+                    <span class="range-slider-value">{{selectedTool.usedTool.properties.levelVal}}</span>
+                  </div>
+                  <div class="inputFieldText notEmpty">RSI VALUE</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- MACD -->
+          <div *ngIf="selectedTool.usedTool.type == 'macd'">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.ema1Period" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.ema1Period != '' && selectedTool.usedTool.properties.ema1Period != null">FIRST EMA CANDLE SIZE</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.ema2Period" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.ema2Period != '' && selectedTool.usedTool.properties.ema2Period != null">SECOND EMA CANDLE SIZE</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.signalPeriod" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.signalPeriod != '' && selectedTool.usedTool.properties.signalPeriod != null">SIGNAL PERIOD SIZE</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.price" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let priceType of candlestickPriceTypes" [value]="priceType ">{{priceType}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty ">CANDLE ATTRIBUTE</div>
+                </div>
+              </div>
+            </div>
+            <div class="row ">
+              <div class="col-md-6 ">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.calcType" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let calcType of nonFixedCalcTypes" [value]="calcType">{{calcType}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">CALC TYPE</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.diff" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.diff != '' && selectedTool.usedTool.properties.diff != null">EMA DIFFERENCE</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.cond" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let toolCond of toolConditions" [value]="toolCond.value">{{toolCond.name}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">ACTIVATION CONDITION</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Stochastic -->
+          <div *ngIf="selectedTool.usedTool.type == 'stoch'">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.KPeriod" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.KPeriod != '' && selectedTool.usedTool.properties.KPeriod != null">STOCH K PERIOD</div>
+                </div>
+              </div>
+              <div class="col-md-6 ">
+                <div class="input ">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.DPeriod" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.DPeriod != '' && selectedTool.usedTool.properties.DPeriod != null ">STOCH D PERIOD</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.cond" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let toolCond of toolConditions" [value]="toolCond.value">{{toolCond.name}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty ">ACTIVATION CONDITION</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <div class="range-slider">
+                    <input type="range" [(ngModel)]="selectedTool.usedTool.properties.levelVal" min="0" max="100" step="0.05">
+                    <span class="range-slider-value">{{selectedTool.usedTool.properties.levelVal}}%</span>
+                  </div>
+                  <div class="inputFieldText notEmpty">STOCH LEVEL VALUE</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Bollinger Band -->
+          <div *ngIf="selectedTool.usedTool.type == 'bb'">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.obj" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let types of tickerPriceTypes" [value]="types">{{types}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">TICKER ATTRIBUTE</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.band" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let types of bollingerBandTypes" [value]="types">{{types}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">BAND TYPE</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.period" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.period != '' && selectedTool.usedTool.properties.period != null">CANDLE SIZE</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.stdev" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.stdev != '' && selectedTool.usedTool.properties.stdev != null">STDEV</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.price" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let priceType of candlestickPriceTypes" [value]="priceType ">{{priceType}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty ">CANDLE ATTRIBUTE</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField" [(ngModel)]="selectedTool.usedTool.properties.maType" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                    <option class="selectOptionField" *ngFor="let types of movingAverageTypes" [value]="types.value">{{types.name}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">MA TYPE</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.calcType" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let calcType of nonFixedCalcTypes" [value]="calcType">{{calcType}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">CALC TYPE</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div *ngIf="selectedTool.usedTool.properties.calcType != 'percent'">
+                  <div class="input">
+                    <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.shiftVal" type="number">
+                    <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.shiftVal != '' && selectedTool.usedTool.properties.shiftVal != null">CHANGE VALUE</div>
+                  </div>
+                </div>
+                <div *ngIf="selectedTool.usedTool.properties.calcType == 'percent'">
+                  <div class="input">
+                    <div class="range-slider">
+                      <input type="range" [(ngModel)]="selectedTool.usedTool.properties.shiftVal" min="0 " max="100" step="0.05">
+                      <span class="range-slider-value">{{selectedTool.usedTool.properties.shiftVal}}%</span>
+                    </div>
+                    <div class="inputFieldText notEmpty">CHANGE VALUE</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="input">
+                <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.cond" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                  <option *ngFor="let toolCond of toolConditions" [value]="toolCond.value">{{toolCond.name}}</option>
+                </select>
+                <div class="inputFieldText notEmpty">ACTIVATION CONDITION</div>
+              </div>
+            </div>
+          </div>
+          <!-- MA Spread -->
+          <div *ngIf="selectedTool.usedTool.type == 'maspread'">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.ma1.maType" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let types of movingAverageTypes" [value]="types.value">{{types.name}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty ">FIRST MA TYPE</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.ma2.maType" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let types of movingAverageTypes" [value]="types.value">{{types.name}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">SECOND MA TYPE</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.ma1.period" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.ma1.period != '' &&selectedTool.usedTool.properties.ma1.period != null">FIRST EMA PERIOD</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.ma2.period" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.ma2.period != '' && selectedTool.usedTool.properties.ma2.period != null">SECOND EMA PERIOD</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.ma1.price" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let priceType of candlestickPriceTypes" [value]="priceType">{{priceType}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">FIRST EMA CANDLE ATTRIBUTE</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.ma2.price" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let priceType of candlestickPriceTypes" [value]="priceType">{{priceType}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">SECOND EMA CANDLE ATTRIBUTE</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.calcType" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let calcType of nonFixedCalcTypes" [value]="calcType">{{calcType}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">CALC TYPE</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div *ngIf="selectedTool.usedTool.properties.calcType !='percent'">
+                  <div class="input">
+                    <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.spread" type="number">
+                    <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.spread != '' && selectedTool.usedTool.properties.spread != null">SPREAD BETWEEN EMA'S</div>
+                  </div>
+                </div>
+                <div *ngIf="selectedTool.usedTool.properties.calcType=='percent'">
+                  <div class="input">
+                    <div class="range-slider">
+                      <input type="range" [(ngModel)]="selectedTool.usedTool.properties.spread" min="0" max="100" step="0.05">
+                      <span class="range-slider-value">{{selectedTool.usedTool.properties.spread}}%</span>
+                    </div>
+                    <div class="inputFieldText notEmpty">SPREAD BETWEEN EMA'S</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.cond" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let toolCond of toolConditions" [value]="toolCond.value">{{toolCond.name}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">ACTIVATION CONDITION</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.baseMA" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option [value]="1">1</option>
+                    <option [value]="2">2</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">BASE MA</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Trailing Trends -->
+          <div *ngIf="selectedTool.usedTool.type == 'trailingtrends'">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.obj" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let types of candlestickPriceTypes" [value]="types">{{types}}</option>
+                    <option *ngFor="let types of movingAverageTypes" [value]="types.value">{{types.name}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">TRAILED DATA</div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedTool.usedTool.properties.obj == 'sma' || selectedTool.usedTool.properties.obj == 'ema' || selectedTool.usedTool.properties.obj == 'wma'" class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.objConf.period" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.objConf.period != '' &&selectedTool.usedTool.properties.objConf.period != null">CANDLE SIZE</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.objConf.price" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let types of candlestickPriceTypes" [value]="types">{{types}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">CANDLE ATTRIBUTE</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.calcType" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let calcType of nonFixedCalcTypes" [value]="calcType">{{calcType}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">CALC TYPE</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.diff" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.diff != '' && selectedTool.usedTool.properties.diff != null">DATA DIFFERENCE</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedTool.usedTool.properties.cond" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                    <option *ngFor="let toolCond of toolConditions" [value]="toolCond.value">{{toolCond.name}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">ACTIVATION CONDITION</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input">
+                  <input class="inputField" [(ngModel)]="selectedTool.usedTool.properties.backIndex" type="number">
+                  <div class="inputFieldText" [class.notEmpty]="selectedTool.usedTool.properties.backIndex != '' && selectedTool.usedTool.properties.backIndex != null">BACK INDEX</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="column" style="margin: 8px 0 0 8px;">
+            <div class="row columnHeader">
+              <div class="col-md-8">
+                <div>TOOLS ACTIVATION SEQUENCE</div>
+              </div>
+            </div>
+            <div class="row overflowSlideBar" style="height:75px; overflow-x: scroll; overflow-y:hidden; white-space: nowrap;">
+              <div *ngFor="let sequenceElement of strategy.sequenceElements; let i = index;" class="sequenceToolBlock">
+                <div *ngIf="sequenceElement.bracketsLeft != 0" class="bracket">
+                  <div *ngFor="let leftBrackets of ' '.repeat(sequenceElement.bracketsLeft).split('')">{{'{'}}</div>
+                </div>
+                <div class="blockText " (click)="selectSequenceElement(sequenceElement)" [class.selected]="sequenceElement == selectedSequenceElement">{{sequenceElement.tool.name}}</div>
+                <div *ngIf="sequenceElement.bracketsRight != 0" class="bracket">
+                  <div *ngFor="let rightBrackets of ' '.repeat(sequenceElement.bracketsRight).split('')">{{'}'}}</div>
+                </div>
+                <div *ngIf="i + 1 != strategy.sequenceElements.length" class="blockConnector" style="display: inline-block;">
+                  <select class="sequenceConnector" [(ngModel)]="strategy.sequenceElements[i].connectionTypeInFront" style="text-transform: uppercase">
+                    <option class="selectOptionField" *ngFor="let connectionOption of connectionOptions" [value]="connectionOption">{{connectionOption}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row managementBlock">
+              <div class="col-md-4">
+                <div class="input">
+                  <select class="inputField selectInput" [(ngModel)]="selectedSequenceElement.tool" style="padding: 10px 0 5px 0;">
+                    <option *ngFor="let tool of strategy.tools" [ngValue]="tool">{{tool.name}}</option>
+                  </select>
+                  <div class="inputFieldText notEmpty">SELECTED TOOL</div>
+                </div>
+              </div>
+              <div class="col-md-8">
+                <div class="row">
+                  <button [disabled]="selectedSequenceElement.bracketsLeft == 0" class="inputButton orangeButton" (click)="manageBracket('left', 'remove')" style="width:190px;">
+                    <span>REMOVE OPENING BRACKET</span>
+                  </button>
+                  <button class="inputButton orangeButton" (click)="manageBracket('left', 'add')" style="width:115px;">
+                    <span>OPEN BRACKET</span>
+                  </button>
+                </div>
+                <div class="row">
+                  <button [disabled]="selectedSequenceElement.bracketsRight == 0" class="inputButton orangeButton" (click)="manageBracket('right', 'remove')" style="width:190px;">
+                    <span>REMOVE CLOSING BRACKET</span>
+                  </button>
+                  <button class="inputButton orangeButton" (click)="manageBracket('right', 'add')" style="width:115px;">
+                    <span>CLOSE BRACKET</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4" style="padding-left: 0;">
+            <div class="column" style="height: 165px;">
+              <div class="columnHeader">
+                <div class="col-md-11">
+                  <div>STRATEGY OUTCOMES</div>
+                </div>
+              </div>
+              <div class="row" style="background-color: #1a1d22 ">
+                <div class="col-md-6">
+                  <div class="input" style="margin-bottom:7px;">
+                    <select [disabled]="availableOutcomesList.length == 0" class="inputField selectInput" [(ngModel)]="selectedOutcomesListItem" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                      <option *ngFor="let outcomes of availableOutcomesList">{{outcomes}}</option>
+                      <option *ngIf="availableOutcomesList.length == 0">Out of options</option>
+                    </select>
+                    <div class="inputFieldText notEmpty">SELECT OUTCOME</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <button [disabled]="availableOutcomesList.length == 0" class="inputButton orangeButton" style="margin-top: 12px;" (click)="addOutcome()">
+                    <span>ADD</span>
+                  </button>
+                </div>
+              </div>
+              <div class="row overflowSlideBar" id="toolsList" style="height: 85px;">
+                <div class="row listBox" *ngFor="let outcome of strategy.outcomes; let i = index" (click)="selectOutcome(outcome)" [class.selected]="outcome == selectedOutcome">
+                  <div class="col-md-8" style="text-transform: uppercase;">{{outcome.type}}</div>
+                  <div class="col-md-4">
+                    <a class="deleteRow" (click)="deleteOutcome(i)" style="float:right; padding: 0 10px;">Delete</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-8" style="padding-right: 0;">
+            <div class="column" style="height: 165px; margin: 8px 0;">
+              <div class="row columnHeader">
+                <div class="col-md-5">
+                  <div>OUTCOME OPTIONS</div>
+                </div>
+                <div *ngIf="selectedOutcome.type == 'telegram'" class="col-md-2 col-md-offset-5" style="padding: 0 13px;">
+                  <div class="iconDiv" id="addButton" (click)="selectedOutcome.properties.messages.push('I have made a trade!')" style="padding-top: 7px;"></div>
+                </div>
+              </div>
+              <div class="row">
+                <!-- BUY Outcome -->
+                <div *ngIf="selectedOutcome.type == 'buy'">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="input">
+                        <select class="inputField selectInput" [(ngModel)]="selectedOutcome.properties.calcType" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                          <option *ngFor="let calcType of buyCalcTypes" [value]="calcType.value">{{calcType.name}}</option>
+                        </select>
+                        <div class="inputFieldText notEmpty">CALC TYPE</div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div *ngIf="selectedOutcome.properties.calcType !='counterpercent' ">
+                        <div class="input">
+                          <input class="inputField" [(ngModel)]="selectedOutcome.properties.amount" type="number">
+                          <div class="inputFieldText" [class.notEmpty]="selectedOutcome.properties.amount != '' && selectedOutcome.properties.amount != null">AMOUNT</div>
+                        </div>
+                      </div>
+                      <div *ngIf="selectedOutcome.properties.calcType == 'counterpercent'">
+                        <div class="input">
+                          <div class="range-slider">
+                            <input type="range" [(ngModel)]="selectedOutcome.properties.amount" min="0" max="100" step="0.05">
+                            <span class="range-slider-value">{{selectedOutcome.properties.amount}}%</span>
+                          </div>
+                          <div class="inputFieldText notEmpty">AMOUNT</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row ">
+                    <div class="col-md-6">
+                      <div class="input">
+                        <select class="inputField selectInput" [(ngModel)]="selectedOutcome.properties.price" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                          <option *ngFor="let priceType of tickerPriceTypes" [value]="priceType">{{priceType}}</option>
+                        </select>
+                        <div class="inputFieldText notEmpty">TICKER ATTRIBUTE</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- SELL Outcome -->
+                <div *ngIf="selectedOutcome.type == 'sell'">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="input">
+                        <select class="inputField selectInput" [(ngModel)]="selectedOutcome.properties.price" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                          <option *ngFor="let priceType of tickerPriceTypes" [value]="priceType">{{priceType}}</option>
+                        </select>
+                        <div class="inputFieldText notEmpty">TICKER ATTRIBUTE</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- DCA Outcome -->
+                <div *ngIf="selectedOutcome.type == 'dca'">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="input">
+                        <select class="inputField selectInput" [(ngModel)]="selectedOutcome.properties.calcType" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                          <option *ngFor="let calcType of dcaCalcTypes" [value]="calcType.value">{{calcType.name}}</option>
+                        </select>
+                        <div class="inputFieldText notEmpty">CALC TYPE</div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div *ngIf="selectedOutcome.properties.calcType != 'counterpercent' && selectedOutcome.properties.calcType != 'basepercent'">
+                        <div class="input">
+                          <input class="inputField" [(ngModel)]="selectedOutcome.properties.amount" type="text">
+                          <div class="inputFieldText" [class.notEmpty]="selectedOutcome.properties.amount != '' && selectedOutcome.properties.amount != null">AMOUNT</div>
+                        </div>
+                      </div>
+                      <div *ngIf="selectedOutcome.properties.calcType == 'counterpercent' || selectedOutcome.properties.calcType == 'basepercent'">
+                        <div class="input">
+                          <div class="range-slider">
+                            <input type="range" [(ngModel)]="selectedOutcome.properties.amount" min="0" max="100" step="0.05">
+                            <span class="range-slider-value">{{selectedOutcome.properties.amount}}%</span>
+                          </div>
+                          <div class="inputFieldText notEmpty">AMOUNT</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="input">
+                        <input class="inputField" [(ngModel)]="selectedOutcome.properties.repeat" type="text">
+                        <div class="inputFieldText" [class.notEmpty]="selectedOutcome.properties.repeat != '' && selectedOutcome.properties.repeat != null">REPEAT TIMES COUNT</div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="input">
+                        <select class="inputField selectInput" [(ngModel)]="selectedOutcome.properties.price" style="text-transform:uppercase; padding: 10px 0 5px 0;">
+                          <option *ngFor="let priceType of tickerPriceTypes" [value]="priceType">{{priceType}}</option>
+                        </select>
+                        <div class="inputFieldText notEmpty ">TICKER ATTRIBUTE</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- SANDBOX Outcome -->
+                <div *ngIf="selectedOutcome.type == 'sandbox'">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="labelField">Sandbox outcome ("sandbox ") allows the bot to run and check strategies with real data without making any external actions. When sandbox outcome is used, no other outcomes can be used. This outcome doesn't have any properties.</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Telegram Outcome -->
+                <div *ngIf="selectedOutcome.type == 'telegram'">
+                  <div class="col-md-3" style="padding: 0;">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="input">
+                          <select class="inputField selectInput" [(ngModel)]="selectedOutcome.properties.selection" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                            <option *ngFor="let selectionType of selectionTypes" [value]="selectionType">{{selectionType}}</option>
+                          </select>
+                          <div class="inputFieldText notEmpty">SELECTION PATTERN</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-9" style="padding: 0;">
+                    <div class="overflowSlideBar" id="toolsList" style="height: 135px;">
+                      <div class="row" *ngFor="let message of selectedOutcome.properties.messages; let index= index; trackBy:trackByIndex;">
+                        <div class="col-md-12" style="padding: 0;">
+                          <div class="input" style="width: calc(100% - 30px); display: inline-block;">
+                            <input class="inputField" type="text" [(ngModel)]="selectedOutcome.properties.messages[index]">
+                            <div class="inputFieldText" [class.notEmpty]="selectedOutcome.properties.messages[index] != '' && selectedOutcome.properties.messages[index] != null">{{index+1}}# MESSAGE</div>
+                          </div>
+                          <div class="iconDiv" id="removeButton" style="margin-top: 15px; margin-right: 13px;" (click)="selectedOutcome.properties.messages.splice(index,1)"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4" style="padding-left: 0;">
+    <div class="row">
+      <div class="column" style="margin-bottom: 0;">
+        <div class="row columnHeader">
+          <div class="col-md-5">
+            <div>AVAILABLE TOOLS</div>
+          </div>
+          <div class="col-md-7">
+            <button class="inputButton orangeButton" (click)="replaceTool('tool')">
+              <span>Replace tool</span>
+            </button>
+            <button class="inputButton orangeButton" (click)="addTool()">
+              <span>New tool</span>
+            </button>
+          </div>
+        </div>
+        <div class="row overflowSlideBar" id="toolsList" style="height: 215px;">
+          <div class="listBox zebraTable" *ngFor="let tool of possibleTools" (click)="selectAvailableTool(tool)" [class.selected]="tool == selectedAvailableTool">
+            <div>{{tool.name}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row ">
+      <div class="column">
+        <div class="row columnHeader">
+          <div class="col-md-10 ">
+            <div>{{selectedAvailableTool.name}} DESCRIPTION</div>
+          </div>
+        </div>
+        <div class="row overflowSlideBar " style="height: 368px; ">
+          <div>
+            <div class="row toolDescriptionHeader">Tool descriptions will go here!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="importFile" class="modal fade popupMessageBox" role="dialog">
+  <div id="popupContent" class="modal-dialog" style="width: 600px;">
+    <div class="row columnHeader">
+      <div class="col-md-4">
+        <div>IMPORTING</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input">
+          <select class="inputField selectInput" [(ngModel)]="selectedImportOption" style="text-transform: uppercase; padding: 10px 0 5px 2px;">
+            <option *ngFor="let option of importOptions" [value]="option">{{option}}</option>
+          </select>
+          <div class="inputFieldText notEmpty">IMPORT FROM</div>
+        </div>
+      </div>
+      <div *ngIf="selectedImportOption == 'From local folder'" class="col-md-6">
+        <div class="input">
+          <label class="inputField">Path: {{importLocation}}
+            <input type="file" size="1" (change)="importLocationChange($event)" />
+          </label>
+          <div class="inputFieldText notEmpty">SELECT FOLDER</div>
+        </div>
+      </div>
+      <div *ngIf="selectedImportOption == 'From bot'" class="col-md-6">
+        <div class="column" style="margin-left: 0; margin-top: 20px;">
+          <div class="row columnHeader">
+            <div class="col-md-10">
+              <div>AVAILABLE STRATEGY CONFIGS</div>
+            </div>
+          </div>
+          <div class="row overflowSlideBar" id="toolsList" style="height: 91px; background-color:#1a1d22;">
+            <div *ngIf="importableStrategies.length == 0;" class="listBox" style="background-color:#DB3A34;">
+              <div class="row" style="text-transform: uppercase; text-align: center;">
+                <div class="col-md-12" style="padding: 0;">
+                  BOT DOESN'T HAVE ANY STRATEGY CONFIGS.
+                </div>
+              </div>
+            </div>
+            <div class="listBox" *ngFor="let strategy of importableStrategies; let i = index" [class.selected]="strategy == selectedStrategyToImport">
+              <div class="row" style="text-transform: uppercase;">
+                <div class="col-md-8" (click)="selectStrategy(i)" style="padding: 0;">
+                  {{strategy}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding: 0 0 10px 0">
+      <div class="col-md-3 col-md-offset-9">
+        <button class="inputButton redButton" data-dismiss="modal">
+          <span>CLOSE</span>
+        </button>
+        <button [disabled]="selectedStrategyToImport == null && selectedImportOption == 'From bot'" class="inputButton blueButton" (click)="importStrategy()" data-dismiss="modal">
+          <span>IMPORT</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="exportFile" class="modal fade popupMessageBox" role="dialog">
+  <div id="popupContent" class="modal-dialog" style="width: 600px;">
+    <div class="row columnHeader">
+      <div class="col-md-4">
+        <div>EXPORTING</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input">
+          <select class="inputField selectInput" [(ngModel)]="selectedExportOption" style="text-transform: uppercase; padding: 10px 0 5px 2px;">
+            <option *ngFor="let option of exportOptions" [value]="option">{{option}}</option>
+          </select>
+          <div class="inputFieldText notEmpty">EXPORT TO</div>
+        </div>
+      </div>
+      <div *ngIf="selectedExportOption == 'To file'" class="col-md-6">
+        <div class="input">
+          <label class="inputField">Path: {{exportLocation}}
+            <input type="file" size="1" (change)="exportLocationChange($event)" webkitdirectory directory />
+          </label>
+          <div class="inputFieldText notEmpty">SELECT FOLDER</div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding: 0 0 10px 0">
+      <div class="col-md-3 col-md-offset-9">
+        <button class="inputButton redButton" data-dismiss="modal">
+          <span>CLOSE</span>
+        </button>
+        <button class="inputButton blueButton" (click)="exportStrategy()" data-dismiss="modal">
+          <span>EXPORT</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

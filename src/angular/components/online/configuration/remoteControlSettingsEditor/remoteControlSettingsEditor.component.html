@@ -1,0 +1,147 @@
+<div *ngIf="isLoading" class="loadingScreen">
+  <span></span>
+</div>
+<div *ngIf="!isLoading">
+  <div class="row header" style="padding: 5px; margin: 4px 8px 0 8px;">Currently using: <em>{{fileLocationDesc}}</em></div>
+  <div class="col-md-6">
+    <div class="column" style="padding-bottom: 10px; margin-top: 4px;">
+      <div class="row columnHeader">
+        <div class="col-md-7">
+          <div>REMOTE CONTROL SETTINGS</div>
+        </div>
+        <div class="col-md-3 col-md-offset-2">
+          <button class="inputButton orangeButton" data-toggle="modal" data-target="#exportFile">
+            <span>EXPORT</span>
+          </button>
+          <button class="inputButton orangeButton" data-toggle="modal" data-target="#importFile">
+            <span>IMPORT</span>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="input">
+            <input class="inputField" [(ngModel)]="remote.telegram.token" type="text">
+            <div class="inputFieldText" [class.notEmpty]="remote.telegram.token != ''&& remote.telegram.token != null">BOT Token
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input">
+            <input class="inputField" [(ngModel)]="remote.telegram.owner" type="text">
+            <div class="inputFieldText" [class.notEmpty]="remote.telegram.owner != ''&& remote.telegram.owner != null">BOT Owner Username
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="column" style="padding-bottom: 10px; margin-left: 0; margin-top: 4px;">
+      <div class="row columnHeader">
+        <div class="col-md-7">
+          <div>REMOTE CONTROL SETTINGS</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="input">
+            <input class="inputField" [(ngModel)]="remote.exchangeDriverAddress" type="text">
+            <div class="inputFieldText" [class.notEmpty]="remote.exchangeDriverAddress != ''&& remote.exchangeDriverAddress != null">Exchange Driver address
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="input">
+            <input class="inputField" [(ngModel)]="remote.internal.username" type="text">
+            <div class="inputFieldText" [class.notEmpty]="remote.internal.username != ''&& remote.internal.username != null">RC Username
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input">
+            <input class="inputField" [(ngModel)]="remote.internal.password" type="password">
+            <div class="inputFieldText" [class.notEmpty]="remote.internal.password != ''&& remote.internal.password != null">RC Password
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="importFile" class="modal fade popupMessageBox" role="dialog">
+  <div id="popupContent" class="modal-dialog" style="width: 600px;">
+    <div class="row columnHeader">
+      <div class="col-md-4">
+        <div>IMPORTING</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input">
+          <select class="inputField selectInput" [(ngModel)]="selectedImportOption" style="text-transform: uppercase; padding: 10px 0 5px 2px;">
+            <option *ngFor="let option of importOptions" [value]="option">{{option}}</option>
+          </select>
+          <div class="inputFieldText notEmpty">IMPORT FROM</div>
+        </div>
+      </div>
+      <div *ngIf="selectedImportOption == 'From local folder'" class="col-md-6">
+        <div class="input">
+          <label class="inputField">Path: {{importLocation}}
+            <input type="file" size="1" (change)="importLocationChange($event)" />
+          </label>
+          <div class="inputFieldText notEmpty">SELECT FOLDER</div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding: 0 0 10px 0">
+      <div class="col-md-3 col-md-offset-9">
+        <button class="inputButton redButton" data-dismiss="modal">
+          <span>CLOSE</span>
+        </button>
+        <button class="inputButton blueButton" (click)="importRC()" data-dismiss="modal">
+          <span>IMPORT</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="exportFile" class="modal fade popupMessageBox" role="dialog">
+  <div id="popupContent" class="modal-dialog" style="width: 600px;">
+    <div class="row columnHeader">
+      <div class="col-md-4">
+        <div>EXPORTING</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input">
+          <select class="inputField selectInput" [(ngModel)]="selectedExportOption" style="text-transform: uppercase; padding: 10px 0 5px 2px;">
+            <option *ngFor="let option of exportOptions" [value]="option">{{option}}</option>
+          </select>
+          <div class="inputFieldText notEmpty">EXPORT TO</div>
+        </div>
+      </div>
+      <div *ngIf="selectedExportOption == 'To file'" class="col-md-6">
+        <div class="input">
+          <label class="inputField">Path: {{exportLocation}}
+            <input type="file" size="1" (change)="exportLocationChange($event)" webkitdirectory directory />
+          </label>
+          <div class="inputFieldText notEmpty">SELECT FOLDER</div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding: 0 0 10px 0">
+      <div class="col-md-3 col-md-offset-9">
+        <button class="inputButton redButton" data-dismiss="modal">
+          <span>CLOSE</span>
+        </button>
+        <button class="inputButton blueButton" (click)="exportRC()" data-dismiss="modal">
+          <span>EXPORT</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

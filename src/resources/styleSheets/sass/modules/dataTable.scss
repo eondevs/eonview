@@ -1,0 +1,84 @@
+@import "../colors.scss";
+
+.listBox{ 
+  padding: 2px 0;
+  > div {
+    padding: 0 10px;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+    color:white;
+    &.listHeader{
+      color: $golden-color;
+    }
+    em {
+      color: $golden-color;
+      font-style:normal;
+    }
+  }
+}
+.zebraTable:nth-of-type(odd){
+  background-color: $secondary-color;
+}
+
+.selected{
+  background-color: lighten($blue-color, 10%) !important;
+}
+
+.deleteRow {
+  cursor: pointer;
+  color: $red-color;
+  text-decoration: none;
+  text-align: right;
+}
+
+.deleteRow:hover {
+  color: #6E1D1A;
+}
+
+.bracket {
+  display:inline-block;
+  position: relative;
+  top: 7px;
+  margin-left: 8px;
+}
+
+.bracket div{
+  display: inline-block;
+  color:$blue-color;
+  font-size: 35px;
+}
+
+.sequenceToolBlock {
+  display: inline-block;
+  font-size: 0;
+  height: 40px;
+}
+
+.sequenceToolBlock .blockText {
+  cursor: pointer;
+  display: inline-block;
+  background-color: #1a1d22;
+  margin: 20px 0 0 8px;
+  padding:4px 20px;
+  color: white;
+  text-align: center;
+  font-size: 13px;
+  transition: all 0.4s;
+}
+
+.sequenceToolBlock .blockText:hover {
+  transform: scale(1.1);
+  transition: transform 0.4s;
+}
+
+.sequenceConnector {
+  border: 0;
+  background-color: #1a1d22;
+  display: block;
+  margin-left: 8px;
+  color: white;
+  padding: 3px;
+  font-size: 13px;
+  height: 26px;
+}

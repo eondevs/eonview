@@ -1,0 +1,278 @@
+<div *ngIf="isLoading" class="loadingScreen">
+  <span></span>
+</div>
+<div *ngIf="!isLoading">
+  <div class="row header" style="padding: 5px; margin: 4px 8px 0 8px;">Currently using: <em>{{fileLocationDesc}}</em></div>
+  <div class="col-md-6">
+    <div class="column" style="padding-bottom: 10px; margin-top: 4px;">
+      <div class="row columnHeader">
+        <div class="col-md-6">
+          <div>CURRENCIES FILTERS</div>
+        </div>
+        <div class="col-md-3 col-md-offset-3">
+          <button class="inputButton orangeButton" data-toggle="modal" data-target="#exportFile">
+            <span>EXPORT</span>
+          </button>
+          <button class="inputButton orangeButton" data-toggle="modal" data-target="#importFile">
+            <span>IMPORT</span>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="input">
+            <input class="inputField" [(ngModel)]="filterName" type="text">
+            <div class="inputFieldText" [class.notEmpty]="filterName != '' && filterName != null">SEARCH BY NAME</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input">
+            <select class="inputField selectInput" [(ngModel)]="selectedMarket" style="text-transform: uppercase; padding: 10px 0 5px 2px;">
+              <option *ngFor="let market of markets" [value]="market">{{market}}</option>
+            </select>
+            <div class="inputFieldText notEmpty">SEARCH BY MARKET</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="column">
+      <div class="row columnHeader">
+        <div class="col-md-6">
+          <div>CURRENCIES TO BE USED</div>
+        </div>
+      </div>
+      <div class="row listBox" style="background-color: #1a1d22; padding-right: 8px;">
+        <div class="col-md-1" style="text-align:left !important;" (click)="sortBy = 'baseCurrency'">TICKER</div>
+        <div class="col-md-2" style="text-align:right !important;" (click)="sortBy = 'change'">CHANGE</div>
+        <div class="col-md-3" style="text-align:right !important;" (click)="sortBy = 'last'">LAST PRICE</div>
+        <div class="col-md-4" style="text-align:right !important;" (click)="sortBy = 'volume'">VOLUME</div>
+        <div class="col-md-2" style="text-align:right !important;" (click)="sortBy = 'status'">ENABLED</div>
+      </div>
+      <div class="row overflowSlideBar" id="toolsList" style="height: 450px;">
+        <div class="row listBox zebraTable" *ngFor="let pair of pairs | pairsSort:filterName:selectedMarket:sortBy">
+          <div class="col-md-1" style="text-align:left !important;">
+            {{pair.baseAsset}}
+          </div>
+          <div class="col-md-2 profit" [class.loss]="pair.dayPercentChange < 0" style="text-align:right !important;">
+            {{pair.dayPercentChange}}%
+          </div>
+          <div class="col-md-3" style="text-align:right !important;">
+            {{pair.lastPrice}} <em>{{selectedMarket}}</em>
+          </div>
+          <div class="col-md-4" style="text-align:right !important;">
+            {{pair.counterVolume}} <em>{{selectedMarket}}</em>
+          </div>
+          <div class="col-md-2">
+            <div class="sliderField">
+              <input type="checkbox" id="{{pair.baseAsset}}" [(ngModel)]="pair.checked" />
+              <label for="{{pair.baseAsset}}"></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="column" style="padding-bottom: 10px; margin-left: 0; margin-top: 4px;">
+      <div class="row columnHeader">
+        <div class="col-md-5">
+          <div>BOT SETTINGS</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="sliderField" style="top: 6px; right: 15px;">
+            <input type="checkbox" id="cancelOpenOrders" [(ngModel)]="main.pairsConfig.cancelOpenOrders" />
+            <label for="cancelOpenOrders"></label>
+          </div>
+          <div class="input">
+            <input [disabled]="!main.pairsConfig.cancelOpenOrders" class="inputField" [(ngModel)]="main.pairsConfig.openOrdersLifespan" type="number">
+            <div class="inputFieldText" [class.notEmpty]="main.pairsConfig.openOrdersLifespan != '' && main.pairsConfig.openOrdersLifespan != null">OPEN ORDERS CANCLE DELAY</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input">
+            <input class="inputField" [(ngModel)]="main.pairsConfig.orderHistoryDayCount" type="number">
+            <div class="inputFieldText" [class.notEmpty]="main.pairsConfig.orderHistoryDayCount != '' && main.pairsConfig.orderHistoryDayCount != null">ORDER HISTORY LENGTH</div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="input">
+            <input class="inputField" [(ngModel)]="main.botConfig.cycleDelay" type="number">
+            <div class="inputFieldText" [class.notEmpty]="main.botConfig.cycleDelay != '' && main.botConfig.cycleDelay != null">BOT CYCLE DELAY</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input">
+            <select class="inputField selectInput" [(ngModel)]="main.pairsConfig.candleInterval" style="text-transform: uppercase; padding: 10px 0 5px 2px;">
+              <option *ngFor="let candle of candles" [value]="candle">{{candle}}</option>
+            </select>
+            <div class="inputFieldText notEmpty">CANDLE PERIOD</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="column" style="padding-bottom: 10px; margin-left: 0; margin-top: 4px;">
+      <div class="row columnHeader">
+        <div class="col-md-7">
+          <div>ADVANCED BOT SETTINGS</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="input">
+            <input class="inputField" [(ngModel)]="main.botConfig.streamCount" type="number">
+            <div class="inputFieldText" [class.notEmpty]="main.botConfig.streamCount != '' && main.botConfig.streamCount != null">CONCURRENT STREAMS COUNT</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input">
+            <input class="inputField" [(ngModel)]="main.botConfig.sideTaskRestarts" type="number">
+            <div class="inputFieldText" [class.notEmpty]="main.botConfig.sideTaskRestarts != '' && main.botConfig.sideTaskRestarts != null">SIDE TASK RESTARTS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="column" style="margin-left: 0; margin-top: 0">
+          <div class="row columnHeader">
+            <div class="col-md-10">
+              <div>AVAILABLE STRATEGIES</div>
+            </div>
+          </div>
+          <div class="row overflowSlideBar" id="toolsList" style="height: 91px; background-color:#1a1d22;">
+            <div *ngIf="availableStrategies.length == 0;" class="listBox" style="background-color:#DB3A34;">
+              <div class="row" style="text-transform: uppercase; text-align: center;">
+                <div *ngIf="usedStrategies.length == 0;" class="col-md-12" style="padding: 0;">
+                  NO STATEGIES ARE SAVED IN BOT'S DIRECTORY.
+                </div>
+                <div *ngIf="usedStrategies.length > 0;" class="col-md-12" style="padding: 0;">
+                  ALL STRATEGIES ARE BEING USED.
+                </div>
+              </div>
+            </div>
+            <div class="listBox" *ngFor="let strategy of availableStrategies; let i = index">
+              <div class="row" style="text-transform: uppercase;">
+                <div class="col-md-8" style="padding: 0;">
+                  {{strategy}}
+                </div>
+                <div class="col-md-4">
+                  <a class="deleteRow" (click)="addStrategy(i)" style="float:right;">
+                    ADD
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="column" style="margin-left: 0; margin-top: 0">
+          <div class="row columnHeader">
+            <div class="col-md-10">
+              <div>USED STRATEGIES</div>
+            </div>
+          </div>
+          <div class="row overflowSlideBar" id="toolsList" style="height: 91px; background-color:#1a1d22;">
+            <div *ngIf="usedStrategies.length == 0;" class="listBox" style="background-color:#DB3A34;">
+              <div class="row" style="text-transform: uppercase; text-align: center;">
+                <div class="col-md-12" style="padding: 0;">
+                  NO STRATEGIES ARE BEING USED.
+                </div>
+              </div>
+            </div>
+            <div class="listBox" *ngFor="let strategy of usedStrategies; let i = index">
+              <div class="row" style="text-transform: uppercase;">
+                <div class="col-md-8" style="padding: 0;">
+                  {{strategy}}
+                </div>
+                <div class="col-md-4">
+                  <a class="deleteRow" (click)="removeStrategy(i)" style="float:right;">
+                    REMOVE
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="importFile" class="modal fade popupMessageBox" role="dialog">
+  <div id="popupContent" class="modal-dialog" style="width: 600px;">
+    <div class="row columnHeader">
+      <div class="col-md-4">
+        <div>IMPORTING</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input">
+          <select class="inputField selectInput" [(ngModel)]="selectedImportOption" style="text-transform: uppercase; padding: 10px 0 5px 2px;">
+            <option *ngFor="let option of importOptions" [value]="option">{{option}}</option>
+          </select>
+          <div class="inputFieldText notEmpty">IMPORT FROM</div>
+        </div>
+      </div>
+      <div *ngIf="selectedImportOption == 'From local folder'" class="col-md-6">
+        <div class="input">
+          <label class="inputField">Path: {{importLocation}}
+            <input type="file" size="1" (change)="importLocationChange($event)" />
+          </label>
+          <div class="inputFieldText notEmpty">SELECT FOLDER</div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding: 0 0 10px 0">
+      <div class="col-md-3 col-md-offset-9">
+        <button class="inputButton redButton" data-dismiss="modal">
+          <span>CLOSE</span>
+        </button>
+        <button class="inputButton blueButton" (click)="importMain()" data-dismiss="modal">
+          <span>IMPORT</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="exportFile" class="modal fade popupMessageBox" role="dialog">
+  <div id="popupContent" class="modal-dialog" style="width: 600px;">
+    <div class="row columnHeader">
+      <div class="col-md-4">
+        <div>EXPORTING</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input">
+          <select class="inputField selectInput" [(ngModel)]="selectedExportOption" style="text-transform: uppercase; padding: 10px 0 5px 2px;">
+            <option *ngFor="let option of exportOptions" [value]="option">{{option}}</option>
+          </select>
+          <div class="inputFieldText notEmpty">EXPORT TO</div>
+        </div>
+      </div>
+      <div *ngIf="selectedExportOption == 'To file'" class="col-md-6">
+        <div class="input">
+          <label class="inputField">Path: {{exportLocation}}
+            <input type="file" size="1" (change)="exportLocationChange($event)" webkitdirectory directory />
+          </label>
+          <div class="inputFieldText notEmpty">SELECT FOLDER</div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding: 0 0 10px 0">
+      <div class="col-md-3 col-md-offset-9">
+        <button class="inputButton redButton" data-dismiss="modal">
+          <span>CLOSE</span>
+        </button>
+        <button class="inputButton blueButton" (click)="exportMain()" data-dismiss="modal">
+          <span>EXPORT</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

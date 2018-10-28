@@ -1,0 +1,18 @@
+@import "../colors.scss";
+
+.toolDescriptionHeader {
+  background-color: $secondary-color;
+  color: white;
+  font-size: 14px;
+  padding: 5px;
+}
+
+.toolsColumn {
+  margin: 10px 0;
+  background-color: $accent-color;
+}
+
+.managementBlock{
+  height: 53px;
+  background-color:$secondary-color;
+}

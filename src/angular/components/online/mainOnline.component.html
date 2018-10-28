@@ -1,0 +1,37 @@
+<div id="sidebar">
+  <ul>
+    <li *ngFor="let sideBarListElement of sideBarOptionList">
+      <a [class.selected]="sideBarListElement === selectedElement" (click)="onSelect(sideBarListElement)">
+        <div [attr.id]="sideBarListElement.id"></div>
+      </a>
+    </li>
+    <li style="position: absolute; bottom: 60px;">
+      <a [class.selected]="openRC" (click)="toggleRC()">
+        <div id="rcID"></div>
+      </a>
+    </li>
+    <li style="position: absolute; bottom: 20px;">
+      <a (click)="logOff()">
+        <div id="logOffID"></div>
+      </a>
+    </li>
+  </ul>
+</div>
+<div id="content">
+  <router-outlet></router-outlet>
+</div>
+<div [class.openRC]="openRC" id="remoteTab">
+  <div class="row header" style="height: 20px; padding-top: 5px;">Connected to: <em>{{address}}</em></div>
+  <div class="row header" style="height: 20px; padding-top: 2px;">Bot is: <em>{{state}}</em></div>
+  <div class="row" id="remoteTabIcons">
+    <a (click)="performRCAction('start')">
+      <div id="startBotID"></div>
+    </a>
+    <a (click)="performRCAction('restart')">
+      <div id="restartBotID"></div>
+    </a>
+    <a (click)="performRCAction('stop')">
+      <div id="stopBotID"></div>
+    </a>
+  </div>
+</div>

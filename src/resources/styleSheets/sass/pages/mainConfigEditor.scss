@@ -1,0 +1,27 @@
+@import "../colors.scss";
+
+.iconDiv {
+  font: normal normal normal 14px/1 'IconsFont';
+  font-size: 17px;
+  width:30px;
+  text-align: center;
+  float: right;
+  color:white;
+  padding: 5px 0;
+}
+
+.iconDiv:hover{
+color: $red-color;
+}
+
+.iconDiv::before{
+  cursor: pointer;
+}
+
+#removeButton::before{
+  content: '\f2ed';
+}
+
+#addButton::before{
+  content: '\f067';
+}

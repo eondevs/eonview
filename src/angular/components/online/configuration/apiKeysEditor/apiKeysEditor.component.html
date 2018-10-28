@@ -1,0 +1,122 @@
+<div *ngIf="isLoading" class="loadingScreen">
+  <span></span>
+</div>
+<div *ngIf="!isLoading">
+  <div class="col-md-6 col-md-offset-3">
+    <div class="column" style="padding-bottom: 10px; margin-left: 0; margin-top:4px;">
+      <div class="row columnHeader">
+        <div class="col-md-8">
+          <div style="text-transform: uppercase;">AUTHENTICATION TOOLS</div>
+        </div>
+        <div class="col-md-3">
+          <button class="inputButton orangeButton" data-toggle="modal" data-target="#exportFile">
+            <span>EXPORT</span>
+          </button>
+          <button class="inputButton orangeButton" data-toggle="modal" data-target="#importFile">
+            <span>IMPORT</span>
+          </button>
+        </div>
+        <div class="col-md-1" style="padding: 0 13px;">
+          <div class="iconDiv" id="addButton" (click)="this.apiKeys.push({ key: '', secret: '' })" style="padding-top: 7px;"></div>
+        </div>
+      </div>
+      <div class="overflowSlideBar" style="max-height: 470px">
+        <div class="row" style="margin-top: 10px;" *ngFor="let credentialPair of apiKeys; let index = index">
+          <div class="row">
+            <div class="col-md-10" style="font-size: 17px; padding-left: 10px; color:#207CE5;">
+              API KEY #{{index + 1}}
+            </div>
+            <div class="col-md-2" style="width: 30px; height: 30px; padding: 0; margin-right: 14px;float:right;">
+              <div class="iconDiv" id="removeButton" (click)="apiKeys.splice(index, 1)"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input" style="margin-top: 0;">
+              <input class="inputField" [(ngModel)]="apiKeys[index].key" type="text">
+              <div class="inputFieldText" [class.notEmpty]="apiKeys[index].key != '' && apiKeys[index].key != null">API KEY
+              </div>
+            </div>
+            <div class="input">
+              <input class="inputField" [(ngModel)]="apiKeys[index].secret" type="text">
+              <div class="inputFieldText" [class.notEmpty]="apiKeys[index].secret != '' && apiKeys[index].secret != null">SECRET</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="importFile" class="modal fade popupMessageBox" role="dialog">
+  <div id="popupContent" class="modal-dialog" style="width: 600px;">
+    <div class="row columnHeader">
+      <div class="col-md-4">
+        <div>IMPORTING</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input">
+          <select class="inputField selectInput" [(ngModel)]="selectedImportOption" style="text-transform: uppercase; padding: 10px 0 5px 2px;">
+            <option *ngFor="let option of importOptions" [value]="option">{{option}}</option>
+          </select>
+          <div class="inputFieldText notEmpty">IMPORT FROM</div>
+        </div>
+      </div>
+      <div *ngIf="selectedImportOption == 'From local folder'" class="col-md-6">
+        <div class="input">
+          <label class="inputField">Path: {{importLocation}}
+            <input type="file" size="1" (change)="importLocationChange($event)" />
+          </label>
+          <div class="inputFieldText notEmpty">SELECT FOLDER</div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding: 0 0 10px 0">
+      <div class="col-md-3 col-md-offset-9">
+        <button class="inputButton redButton" data-dismiss="modal">
+          <span>CLOSE</span>
+        </button>
+        <button class="inputButton blueButton" (click)="importApiKeys()" data-dismiss="modal">
+          <span>IMPORT</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="exportFile" class="modal fade popupMessageBox" role="dialog">
+  <div id="popupContent" class="modal-dialog" style="width: 600px;">
+    <div class="row columnHeader">
+      <div class="col-md-4">
+        <div>EXPORTING</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input">
+          <select class="inputField selectInput" [(ngModel)]="selectedExportOption" style="text-transform: uppercase; padding: 10px 0 5px 2px;">
+            <option *ngFor="let option of exportOptions" [value]="option">{{option}}</option>
+          </select>
+          <div class="inputFieldText notEmpty">EXPORT TO</div>
+        </div>
+      </div>
+      <div *ngIf="selectedExportOption == 'To file'" class="col-md-6">
+        <div class="input">
+          <label class="inputField">Path: {{exportLocation}}
+            <input type="file" size="1" (change)="exportLocationChange($event)" webkitdirectory directory />
+          </label>
+          <div class="inputFieldText notEmpty">SELECT FOLDER</div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding: 0 0 10px 0">
+      <div class="col-md-3 col-md-offset-9">
+        <button class="inputButton redButton" data-dismiss="modal">
+          <span>CLOSE</span>
+        </button>
+        <button class="inputButton blueButton" (click)="exportApiKeys()" data-dismiss="modal">
+          <span>EXPORT</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

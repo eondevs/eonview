@@ -1,0 +1,38 @@
+{
+  "name": "eonbot-desktop",
+  "version": "2.0.0-beta",
+  "description": "EonView",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@angular/common": "^4.3.6",
+    "@angular/compiler": "^4.3.6",
+    "@angular/core": "^4.3.6",
+    "@angular/forms": "^4.3.6",
+    "@angular/http": "^4.3.6",
+    "@angular/platform-browser": "^4.3.6",
+    "@angular/platform-browser-dynamic": "^4.3.6",
+    "@angular/router": "^4.3.6",
+    "@angular/upgrade": "^4.3.6",
+    "bootstrap": "^3.3.7",
+    "core-js": "^2.5.0",
+    "highcharts": "^6.1.1",
+    "jquery": "^3.2.1",
+    "reflect-metadata": "^0.1.10",
+    "rxjs": "5.4.3",
+    "systemjs": "^0.20.18",
+    "zone.js": "^0.8.17"
+  },
+  "devDependencies": {
+    "@types/node": "^8.0.25",
+    "@types/systemjs": "^0.20.6",
+    "electron": "^1.7.9",
+    "electron-connect": "^0.6.2",
+    "gulp": "^3.9.1",
+    "gulp-livereload": "^3.8.1",
+    "gulp-sass": "^3.1.0",
+    "gulp-typescript": "^3.2.2",
+    "typescript": "^2.4.2"
+  }
+}

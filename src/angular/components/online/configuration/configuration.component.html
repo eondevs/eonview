@@ -1,0 +1,11 @@
+<div class="navbar">
+  <ul>
+    <li *ngFor="let navBarListElement of navBarOptionList; let i = index" [class.selected]="navBarListElement === selectedElement"
+      (ngOnInit)="onSelect(navBarListElement)" (click)="onSelect(navBarListElement)">
+      <a>{{navBarListElement.name}}</a>
+    </li>
+  </ul>
+</div>
+<div class="overflowFix">
+  <router-outlet></router-outlet>
+</div>

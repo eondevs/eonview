@@ -1,0 +1,616 @@
+<!-- <div *ngIf="!isLoading && currenciesList.length == 0">
+  <div class="col-md-4 col-md-offset-4">
+    <div class="column" style="padding-bottom: 10px; margin-bottom: 0;">
+      <div class="row columnHeader">
+        <div class="col-md-4">
+          <div>ERROR</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="row header" style="padding: 5px; margin: 4px 8px 0 8px;">No currencies are being used.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="!isLoading && currenciesList.length != 0">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="column" style="padding-bottom: 10px; margin-bottom: 0; margin-top: 4px;">
+        <div class="row columnHeader">
+          <div class="col-md-6">
+            <div>USED ASSETS OVERVIEW</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="input">
+              <select class="inputField selectInput" [(ngModel)]="selectedCurrency" (change)="currencyChange()" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                <option *ngFor="let currency of currenciesList" [ngValue]="currency">{{currency.baseAsset + '_' + currency.counterAsset}}</option>
+              </select>
+              <div class="inputFieldText notEmpty">SELECT ASSET</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="column" style="padding-bottom: 10px; margin: 4px 0 0 0;">
+        <div class="row columnHeader">
+          <div class="col-md-6">
+            <div>USED ASSETS STRATEGY</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="input">
+              <select class="inputField selectInput" [(ngModel)]="selectedStrategy" (change)="updateSelects()" style="padding: 10px 0 5px 0;">
+                <option *ngFor="let strategy of currencyStrategies" [ngValue]="strategy">{{strategy.name}}</option>
+              </select>
+              <div class="inputFieldText notEmpty">SELECT ASSET STRATEGY</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="column" style="margin-bottom: 0;">
+      <div class="row columnHeader">
+        <div class="col-md-6">
+          <div>TOOLS SEQUENCE</div>
+        </div>
+      </div>
+      <div class="row overflowSlideBar" style="height:75px; overflow-x: scroll; overflow-y:hidden; white-space: nowrap;">
+        <div *ngIf="isSnapshotDataAvailable">
+          <div *ngFor="let sequenceElement of selectedStrategy.sequenceElements; let i = index;" class="sequenceToolBlock">
+            <div *ngIf="sequenceElement.bracketsLeft != 0" class="bracket">
+              <div *ngFor="let leftBrackets of ' '.repeat(sequenceElement.bracketsLeft).split('')">{{'{'}}</div>
+            </div>
+            <div class="blockText" (click)="selectItem(sequenceElement)" [class.selected]="sequenceElement == selectedSequenceElement">{{sequenceElement.toolName}}</div>
+            <div *ngIf="sequenceElement.bracketsRight != 0" class="bracket">
+              <div *ngFor="let rightBrackets of ' '.repeat(sequenceElement.bracketsRight).split('')">{{'}'}}</div>
+            </div>
+            <div *ngIf="i + 1 !=selectedStrategy.sequenceElements.length" class="blockConnector" style="display: inline-block;">
+              <div class="blockText" style="text-transform: uppercase; cursor: default;">{{sequenceElement.connectionTypeInFront}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4" style="width:420px;">
+      <div class="column" style="margin: 8px 0 0 8px;">
+        <div class="row columnHeader">
+          <div class="col-md-6">
+            <div style="text-transform: uppercase;">TOOL SETTINGS</div>
+          </div>
+        </div>
+        <div class="row" style="padding-bottom:7px;">
+          <div *ngIf="isSnapshotDataAvailable">
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'buyPrice'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  Calculating:
+                  <em>
+                    <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj}}</div>
+                  </em>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  Calculating by:
+                  <em>
+                    <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.calcType}}</div>
+                  </em>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Value has to shift: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.shiftVal}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Act when calculation is: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.cond}}</div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'simpleChange'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  Calculating:
+                  <em>
+                    <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj}}</div>
+                  </em>
+                </div>
+                <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'sma' || selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'ema' || selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'wma'" class="textItem" style="margin-top:8px;">
+                  Calculation period: <em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.objConf.period}}</em>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  Calculating by:
+                  <em>
+                    <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.calcType}}</div>
+                  </em>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  Value has to shift: <em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.shiftVal}}</em>
+                </div>
+                <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'sma' || selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'ema' || selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'wma'" class="textItem" style="margin-top:8px;">
+                  Calculating period by:
+                  <em>
+                    <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.objConf.price}}</div>
+                  </em>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  Act when calculation is:
+                  <em>
+                    <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.cond}}</div>
+                  </em>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'rollerCoaster'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Calculating: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj}}</div>
+                </div>
+                <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'sma' || selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'ema' || selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'wma'" class="textItem" style="margin-top:8px;">
+                  <em>Calculation period: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.objConf.period}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Calculating by: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.calcType}}</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Value has to shift: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.shiftVal}}
+                </div>
+                <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'sma' || selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'ema' || selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'wma'" class="textItem" style="margin-top:8px;">
+                  <em>Calculating period by: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.objConf.price}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Comparing to: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.pointType}}</div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'rsi'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Calculation period: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.period}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Calculating by: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.price}}</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Expected value: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.levelVal}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Act when calculation is: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.cond}}</div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'macd'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>First EMA period: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.ema1Period}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Signal period: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.signalPeriod}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Expected difference: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.diff}}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Second EMA period: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.ema2Period}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Calculating lines by: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.price}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Calculating by: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.calcType}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Act when calculation is: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.cond}}</div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'stoch'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>K period: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.KPeriod}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Level: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.level}}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>D period: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.DPeriod}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Act when calculation is: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.cond}}</div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'bb'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Calculating: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Band in use: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.band}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Period: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.period}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Calculating by: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.calcType}}</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Standart Deviation: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.stdev}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Calculating lines by: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.price}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>MA Type: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.maType}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Value has to shift: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.shiftVal}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Act when calculation is: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.cond}}</div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'maSpread'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Base MA: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.baseMA}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>First MA type: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.ma1.maType}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>First MA period: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.ma1.period}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>First MA calculated by: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.ma1.price}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Calculating by: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.calcType}}</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Spread between MA: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.spread}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Second MA type: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.ma2.maType}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Second MA period: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.ma2.period}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Second MA calculated by: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.ma2.price}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Act when calculation is: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.cond}}</div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'trailingTrends'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Calculating: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj}}</div>
+                </div>
+                <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'sma' || selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'ema' || selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'wma'" class="textItem" style="margin-top:8px;">
+                  <em>Calculation period: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.objConf.period}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Calculating by: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.calcType}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Back index: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.backIndex}}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Difference: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.diff}}
+                </div>
+                <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'sma' || selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'ema' || selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj == 'wma'" class="textItem" style="margin-top:8px;">
+                  <em>Calculating period by: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.objConf.price}}</div>
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Act when calculation is: </em>
+                  <div style="text-transform: uppercase; display: inline-block;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.cond}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column" style="margin: 8px 0 0 8px;">
+        <div class="row columnHeader">
+          <div class="col-md-6">
+            <div>LATEST TOOL DATA</div>
+          </div>
+        </div>
+        <div class="row" style="padding-bottom:7px;">
+          <div *ngIf="isSnapshotDataAvailable">
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'buyPrice'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Buy Price: </em> {{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.buyPrice}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Objective val: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.objVal}}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Shifted Buy Price: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.shiftedBuyPrice}}
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'simpleChange'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  Current <em style="text-transform: uppercase;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj}} </em>value: <em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.changeVal}}</em>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  Required <em style="text-transform: uppercase;">{{selectedStrategy.tools[selectedSequenceElement.toolName].properties.obj}} </em>value: <em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.objVal}}</em>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'rollerCoaster'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Point val: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.pointVal}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Objective val: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.objVal}}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Shifted Point Val: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.shiftedPointVal}}
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'rsi'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>RSI Val: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.rsiVal}}
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'macd'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Diff Val: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.diffVal}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>MACD Line: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.macdLine}}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Signal Line: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.signalLine}}
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'stoch'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>K: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.K}}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>D: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.D}}
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'bb'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Shifted Band: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.shiftedBand}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Upper Band: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.upper}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Objective Val: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.objVal}}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Middle Band: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.middle}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Lower Band: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.lower}}
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'maSpread'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Spread Val: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.spreadVal}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>MA1 Value: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.ma1Val}}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>MA2 Value: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.ma2Val}}
+                </div>
+              </div>
+            </div>
+            <div *ngIf="selectedStrategy.tools[selectedSequenceElement.toolName].type == 'trailingTrends'">
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Diff Val: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.diffVal}}
+                </div>
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Lead Obj Val: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.leadObjVal}}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="textItem" style="margin-top:8px;">
+                  <em>Back Obj Val: </em>{{selectedStrategy.tools[selectedSequenceElement.toolName].snapshot.data.backObjVal}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-11" style="width: calc(100% - 420px);">
+      <div class="column" style="margin-bottom: 0;">
+        <div class="row columnHeader">
+          <div class="col-md-5">
+            <div>CHART</div>
+          </div>
+        </div>
+        <div class="row" style="padding-bottom: 6px; background-color: #1a1d22; margin-bottom:10px;">
+          <div class="col-md-5">
+            <div class="input">
+              <select class="inputField selectInput" [(ngModel)]="candleSize" (change)="loadChart()" style="text-transform: uppercase; padding: 10px 0 5px 0;">
+                <option *ngFor="let candle of availableCandleSizes" [ngValue]="candle">{{candle}} seconds</option>
+              </select>
+              <div class="inputFieldText notEmpty">SELECT CANDLE</div>
+            </div>
+          </div>
+          <div class="col-md-5 col-md-offset-2">
+            <div class="input">
+              <input class="inputField" [(ngModel)]="chartSize" (change)="loadChart()" type="number">
+              <div class="inputFieldText" [class.notEmpty]="chartSize != '' && chartSize != null">CANDLESTICK COUNT</div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="chart" id="assetChart" style="height: 500px;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="column" style="margin-bottom: 0; margin-right: 0;">
+        <div class="row columnHeader">
+          <div class="col-md-6">
+            <div>OPEN ORDERS</div>
+          </div>
+        </div>
+        <div class="row listBox" style="background-color: #1a1d22; padding-right: 8px;">
+          <div class="col-md-1 listHeader" style="text-align:left !important;">TYPE</div>
+          <div class="col-md-3 listHeader" style="text-align:right !important;">CREATED AT</div>
+          <div class="col-md-3 listHeader" style="text-align:right !important;">AMOUNT</div>
+          <div class="col-md-3 listHeader" style="text-align:right !important;">PRICE</div>
+          <div class="col-md-2 listHeader" style="text-align:right !important;">TOTAL</div>
+        </div>
+        <div class="row overflowSlideBar" id="toolsList" style="height: 150px;">
+          <div class="row listBox zebraTable" *ngFor="let order of currencyOverallData.openOrders">
+            <div class="col-md-1 profit" [class.loss]="order.side == 'sell'" style="text-align:left !important; text-transform: uppercase;">
+              {{order.side}}
+            </div>
+            <div class="col-md-3" style="text-align:right !important;">
+              {{order.timestamp}}
+            </div>
+            <div class="col-md-3" style="text-align:right !important;">
+              {{order.amount}} <em>{{selectedCurrency.counterAsset}}</em>
+            </div>
+            <div class="col-md-3" style="text-align:right !important;">
+              {{order.rate}} <em>{{selectedCurrency.counterAsset}}</em>
+            </div>
+            <div class="col-md-2" style="text-align:right !important;">
+              {{order.amount*order.rate}} <em>{{selectedCurrency.counterAsset}}</em>
+            </div>
+          </div>
+          <div *ngIf="currencyOverallData.openOrders == null || currencyOverallData.openOrders.length == 0" class="row listBox zebraTable">
+            <div class="col-md-12">
+              No open orders were found;
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="column" style="margin-bottom: 0;">
+        <div class="row columnHeader">
+          <div class="col-md-6">
+            <div>ORDER HISTORY</div>
+          </div>
+        </div>
+        <div class="row listBox" style="background-color: #1a1d22; padding-right: 8px;">
+          <div class="col-md-1 listHeader" style="text-align:left !important;">TYPE</div>
+          <div class="col-md-3 listHeader" style="text-align:right !important;">DATE</div>
+          <div class="col-md-3 listHeader" style="text-align:right !important;">AMOUNT</div>
+          <div class="col-md-3 listHeader" style="text-align:right !important;">PRICE</div>
+          <div class="col-md-2 listHeader" style="text-align:right !important;">TOTAL</div>
+        </div>
+        <div class="row overflowSlideBar" id="toolsList" style="height: 150px;">
+          <div class="row listBox zebraTable" *ngFor="let order of currencyOverallData.orders">
+            <div class="col-md-1 profit" [class.loss]="order.side == 'sell'" style="text-align:left !important; text-transform: uppercase;">
+              {{order.side}}
+            </div>
+            <div class="col-md-3" style="text-align:right !important;">
+              {{order.timestamp}}
+            </div>
+            <div class="col-md-3" style="text-align:right !important;">
+              {{order.amount}} <em>{{selectedCurrency.counterAsset}}</em>
+            </div>
+            <div class="col-md-3" style="text-align:right !important;">
+              {{order.rate}} <em>{{selectedCurrency.counterAsset}}</em>
+            </div>
+            <div class="col-md-2" style="text-align:right !important;">
+              {{order.amount*order.rate}} <em>{{selectedCurrency.counterAsset}}</em>
+            </div>
+          </div>
+          <div *ngIf="currencyOverallData.orders == null || currencyOverallData.orders.length == 0" class="row listBox zebraTable">
+            <div class="col-md-12">
+              No orders were found;
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
